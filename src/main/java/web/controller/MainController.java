@@ -11,40 +11,44 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class MainController {
 
-    @Autowired
-    private EntityService<User> userService;
+    private final EntityService<User> userService;
 
-    @GetMapping(value = "/")
+    @Autowired
+    public MainController(EntityService<User> userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/")
     public String getIndex(ModelMap model) {
         model.addAttribute("users", userService.findAll());
         return "index";
     }
 
-    @GetMapping("/add")
+    @GetMapping("add")
     public String getAdd(Model model) {
         model.addAttribute("user", new User());
-        return "/add";
+        return "add";
     }
 
-    @PostMapping("/add")
-    public String postAdd(@ModelAttribute("user") User user, Model model) {
+    @PostMapping("add")
+    public String postAdd(@ModelAttribute("user") User user) {
         userService.add(user);
         return "redirect:/";
     }
 
-    @PostMapping("/delete")
-    public String postDelete(@RequestParam("id") Long id, Model model) {
+    @PostMapping("delete")
+    public String postDelete(@RequestParam("id") Long id) {
         userService.delete(id);
         return "redirect:/";
     }
 
-    @GetMapping("/edit")
+    @GetMapping("edit")
     public String getEdit(@RequestParam("id") Long id, Model model) {
         model.addAttribute("user", userService.findById(id));
         return "edit";
     }
 
-    @PostMapping("/edit")
+    @PostMapping("edit")
     public String postEdit(@ModelAttribute("user") User user) {
         userService.update(user);
         return "redirect:/";
